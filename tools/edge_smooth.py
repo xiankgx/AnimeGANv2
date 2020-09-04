@@ -1,30 +1,41 @@
 # The edge_smooth.py is from taki0112/CartoonGAN-Tensorflow https://github.com/taki0112/CartoonGAN-Tensorflow#2-do-edge_smooth
-from tools.utils import check_folder
-import numpy as np
-import cv2, os, argparse
+import argparse
+import os
 from glob import glob
+
+import cv2
+import numpy as np
 from tqdm import tqdm
+
+from tools.utils import check_folder
+
 
 def parse_args():
     desc = "Edge smoothed"
     parser = argparse.ArgumentParser(description=desc)
-    parser.add_argument('--dataset', type=str, default='Shinkai', help='dataset_name')
-    parser.add_argument('--img_size', type=int, default=256, help='The size of image')
+    parser.add_argument('--dataset', type=str,
+                        default='Shinkai', help='dataset_name')
+    parser.add_argument('--img_size', type=int,
+                        default=256, help='The size of image')
 
     return parser.parse_args()
 
-def make_edge_smooth(dataset_name, img_size) :
-    check_folder(os.path.dirname(os.path.dirname(__file__))+'/dataset/{}/{}'.format(dataset_name, 'smooth'))
 
-    file_list = glob(os.path.dirname(os.path.dirname(__file__))+'/dataset/{}/{}/*.*'.format(dataset_name, 'style'))
-    save_dir = os.path.dirname(os.path.dirname(__file__))+'/dataset/{}/smooth'.format(dataset_name)
+def make_edge_smooth(dataset_name, img_size):
+    check_folder(os.path.dirname(os.path.dirname(__file__)) +
+                 '/dataset/{}/{}'.format(dataset_name, 'smooth'))
+
+    file_list = glob(os.path.dirname(os.path.dirname(__file__)) +
+                     '/dataset/{}/{}/*.*'.format(dataset_name, 'style'))
+    save_dir = os.path.dirname(os.path.dirname(
+        __file__))+'/dataset/{}/smooth'.format(dataset_name)
 
     kernel_size = 5
     kernel = np.ones((kernel_size, kernel_size), np.uint8)
     gauss = cv2.getGaussianKernel(kernel_size, 0)
     gauss = gauss * gauss.transpose(1, 0)
 
-    for f in tqdm(file_list) :
+    for f in tqdm(file_list):
         file_name = os.path.basename(f)
 
         bgr_img = cv2.imread(f)
@@ -49,7 +60,7 @@ def make_edge_smooth(dataset_name, img_size) :
 
         cv2.imwrite(os.path.join(save_dir, file_name), gauss_img)
 
-"""main"""
+
 def main():
     # parse arguments
     args = parse_args()
