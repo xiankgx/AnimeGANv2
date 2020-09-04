@@ -21,14 +21,17 @@ def preprocessing(img, size):
     if h <= size[0]:
         h = size[0]
     else:
+        # Make divisible by 32
         x = h % 32
         h = h - x
 
     if w < size[1]:
         w = size[1]
     else:
+        # Make divisible by 32
         y = w % 32
         w = w - y
+
     # the cv2 resize func : dsize format is (W ,H)
     img = cv2.resize(img, (w, h))
     return img/127.5 - 1.0
@@ -55,7 +58,8 @@ def imsave(images, path):
     return cv2.imwrite(path, cv2.cvtColor(images, cv2.COLOR_BGR2RGB))
 
 
-def crop_image(img, x0, y0, w, h): return img[y0:y0+h, x0:x0+w]
+def crop_image(img, x0, y0, w, h):
+    return img[y0:y0+h, x0:x0+w]
 
 
 def random_crop(img1, img2, crop_H, crop_W):

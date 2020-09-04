@@ -60,28 +60,47 @@ class AnimeGANv2(object):
         check_folder(self.sample_dir)
 
         # ---------------------------------------------------------------------
+        # Define data generators
+        # ---------------------------------------------------------------------
+
+        self.real_image_generator = ImageGenerator('./dataset/train_photo',
+                                                   self.img_size,
+                                                   self.batch_size,
+                                                   self.data_mean)
+        self.anime_image_generator = ImageGenerator('./dataset/{}'.format(self.dataset_name + '/style'),
+                                                    self.img_size,
+                                                    self.batch_size,
+                                                    self.data_mean)
+        self.anime_smooth_generator = ImageGenerator('./dataset/{}'.format(self.dataset_name + '/smooth'),
+                                                     self.img_size,
+                                                     self.batch_size,
+                                                     self.data_mean)
+        self.dataset_num = max(self.real_image_generator.num_images,
+                               self.anime_image_generator.num_images)
+
+        # ---------------------------------------------------------------------
         # Print information
         # ---------------------------------------------------------------------
 
         print()
         print("##### Information #####")
-        print("# gan type : ", self.gan_type)
-        print("# light : ", self.light)
-        print("# dataset : ", self.dataset_name)
-        print("# max dataset number : ", self.dataset_num)
-        print("# batch_size : ", self.batch_size)
-        print("# epoch : ", self.epoch)
-        print("# init_epoch : ", self.init_epoch)
+        print("# GAN type            : ", self.gan_type)
+        print("# light               : ", self.light)
+        print("# dataset             : ", self.dataset_name)
+        print("# max dataset number  : ", self.dataset_num)
+        print("# batch size          : ", self.batch_size)
+        print("# initialization epochs: ", self.init_epoch)
+        print("# epochs               : ", self.epoch)
         print("# training image size [H, W] : ", self.img_size)
-        print("# g_adv_weight,d_adv_weight,con_weight,sty_weight,color_weight,tv_weight : ",
+        print("# g_adv_weight, d_adv_weight, con_weight, sty_weight, color_weight, tv_weight : ",
               self.g_adv_weight,
               self.d_adv_weight,
               self.con_weight,
               self.sty_weight,
               self.color_weight,
               self.tv_weight)
-        print("# init_lr,g_lr,d_lr : ", self.init_lr, self.g_lr, self.d_lr)
-        print(f"# training_rate G -- D: {self.training_rate} : 1")
+        print("# init_lr, g_lr, d_lr : ", self.init_lr, self.g_lr, self.d_lr)
+        print(f"# training_rate G - D: {self.training_rate} : 1")
         print()
 
     # ---------------------------------------------------------------------
@@ -167,25 +186,6 @@ class AnimeGANv2(object):
         self.test_real = tf.placeholder(tf.float32,
                                         [1, None, None, self.img_ch],
                                         name='test_input')
-
-        # ---------------------------------------------------------------------
-        # Define data generators
-        # ---------------------------------------------------------------------
-
-        self.real_image_generator = ImageGenerator('./dataset/train_photo',
-                                                   self.img_size,
-                                                   self.batch_size,
-                                                   self.data_mean)
-        self.anime_image_generator = ImageGenerator('./dataset/{}'.format(self.dataset_name + '/style'),
-                                                    self.img_size,
-                                                    self.batch_size,
-                                                    self.data_mean)
-        self.anime_smooth_generator = ImageGenerator('./dataset/{}'.format(self.dataset_name + '/smooth'),
-                                                     self.img_size,
-                                                     self.batch_size,
-                                                     self.data_mean)
-        self.dataset_num = max(self.real_image_generator.num_images,
-                               self.anime_image_generator.num_images)
 
         self.vgg = Vgg19()
 

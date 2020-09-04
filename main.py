@@ -85,7 +85,7 @@ def parse_args():
     # 15. for Hayao, 50. for Paprika, 10. for Shinkai
     parser.add_argument('--color_weight',
                         type=float,
-                        default=10.,
+                        default=15.,
                         help='Color loss weight.')
     # 1. for Hayao, 0.1 for Paprika, 1. for Shinkai
     parser.add_argument('--tv_weight',

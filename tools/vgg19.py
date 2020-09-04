@@ -30,8 +30,9 @@ class Vgg19:
         start_time = time.time()
         rgb_scaled = ((rgb + 1) / 2) * 255.0  # [-1, 1] ~ [0, 255]
 
-        red, green, blue = tf.split(
-            axis=3, num_or_size_splits=3, value=rgb_scaled)
+        red, green, blue = tf.split(axis=3,
+                                    num_or_size_splits=3,
+                                    value=rgb_scaled)
         bgr = tf.concat(axis=3, values=[blue - VGG_MEAN[0],
                                         green - VGG_MEAN[1],
                                         red - VGG_MEAN[2]])

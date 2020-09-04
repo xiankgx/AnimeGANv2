@@ -31,7 +31,10 @@ def lrelu(x, alpha=0.2):
 # -----------------------------------------------------------------------------
 
 
-def Conv2D(inputs, filters, kernel_size=3, strides=1, padding='VALID', Use_bias=None):
+def Conv2D(inputs, filters,
+           kernel_size=3, strides=1, padding='VALID',
+           Use_bias=None):
+    # Reflection padding
     if kernel_size == 3 and strides == 1:
         inputs = tf.pad(inputs,
                         [[0, 0], [1, 1], [1, 1], [0, 0]],
@@ -45,6 +48,7 @@ def Conv2D(inputs, filters, kernel_size=3, strides=1, padding='VALID', Use_bias=
         inputs = tf.pad(inputs,
                         [[0, 0], [0, 1], [0, 1], [0, 0]],
                         mode="REFLECT")
+
     return tf.contrib.layers.conv2d(inputs,
                                     num_outputs=filters,
                                     kernel_size=kernel_size,
@@ -57,6 +61,7 @@ def Conv2D(inputs, filters, kernel_size=3, strides=1, padding='VALID', Use_bias=
 
 
 def Separable_conv2d(inputs, filters, kernel_size=3, strides=1, padding='VALID', Use_bias=tf.zeros_initializer()):
+    # Reflection padding
     if kernel_size == 3 and strides == 1:
         inputs = tf.pad(inputs,
                         [[0, 0], [1, 1], [1, 1], [0, 0]],
@@ -83,9 +88,11 @@ def dwise_conv(input, k_h=3, k_w=3, channel_multiplier=1,
                padding='VALID',
                name='dwise_conv',
                bias=True):
+    # Reflection padding
     input = tf.pad(input,
                    [[0, 0], [1, 1], [1, 1], [0, 0]],
                    mode="REFLECT")
+
     with tf.variable_scope(name):
         in_channel = input.get_shape().as_list()[-1]
         w = tf.get_variable('w',
@@ -153,6 +160,7 @@ def Upsample(inputs, filters, kernel_size=3):
 
 
 def resBlock(x0, filters, name):
+    # XXX This block is only valid when filters is set to 2x of input channels.
     x = Conv2DNormLReLU(x0, filters, 1, name=name + '_1')
     x = Conv2DNormLReLU(x, filters, 3, name=name + '_2')
     x = Conv2D(x, filters//2, 1)
@@ -164,8 +172,8 @@ def InvertedRes_block(input, expansion_ratio, output_dim, stride, name, reuse=Fa
         # pw
         bottleneck_dim = round(
             expansion_ratio * input.get_shape().as_list()[-1])
-        net = Conv2DNormLReLU(input, bottleneck_dim,
-                              kernel_size=1, Use_bias=bias)
+        net = Conv2DNormLReLU(input, bottleneck_dim, kernel_size=1,
+                              Use_bias=bias)
 
         # dw
         net = dwise_conv(net, name=name)
